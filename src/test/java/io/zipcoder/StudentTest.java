@@ -1,88 +1,52 @@
 package io.zipcoder;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class StudentTest {
 
     @Test
-    public void getFirstNameTest(){
-
-        //GIVEN
-        Student nameTest = new Student("Jeff",null , null);
-        String expected = "Jeff";
-        //WHEN
-        String actual = nameTest.getFirstName();
-        //THEN
-        Assert.assertEquals(expected, actual);
+    public void getNumberOfExamsTakenTest() {
+        Student student = new Student("B", "Chames", new Double[]{40.0, 50.0});
+        Assert.assertEquals(2, (int) student.getNumberOfExamsTaken());
     }
+
     @Test
-    public void getLastNameTest(){
-
-        //GIVEN
-        Student nameTest = new Student(null,"Blob" , null);
-        String expected = "Blob";
-        //WHEN
-        String actual = nameTest.getLastName();
-        //THEN
-        Assert.assertEquals(expected, actual);
+    public void getNumberOfExamTakenNoneTest() {
+        Student student = new Student("B", "Chames", null);
+        Assert.assertEquals(0, (int) student.getNumberOfExamsTaken());
     }
-//Come back to this test
+
     @Test
-    public void getNumberOfExamsTakenTest(){
-
-        //GIVEN
-        String firstName = "Leon";
-        String lastName = "Hunter";
-        Double[] examScores = { 100.0, 95.0, 123.0, 96.0 };
-        Student student = new Student(firstName, lastName, examScores);
-        Integer expected = 4;
-        //WHEN
-        Integer actual = student.getNumberOfExamsTaken();
-        //THEN
-        Assert.assertEquals(expected, actual);
+    public void addExamScoreTest() {
+        Student student = new Student("B", "Chames", new Double[]{80.0, 90.0});
+        student.addExamScore(66.0);
+        System.out.println(student.toString());
+        Assert.assertEquals(66.0, student.getExamScore(3), 0.0001);
     }
-    //Come back to this test
+
     @Test
-    public void getExamScoreTest(){
-
-        String firstName = "Leon";
-        String lastName = "Hunter";
-        Double[] examScores = { 100.0, 95.0, 123.0, 96.0 };
-        Student student = new Student(firstName, lastName, examScores);
-        String expected = "Exam Scores:\n" + "Exam 1 -> 100.0\n" + "Exam 2 -> 95.0\n" + "Exam 3 -> 123.0\n" + "Exam 4 -> 96.0";
-
-        String actual = student.getExamScores();
-
-        Assert.assertEquals(expected, actual);
+    public void addExamScoreNullTest() {
+        Student student = new Student("B", "Chames", new Double[] {});
+        student.addExamScore(80.0);
+        Assert.assertEquals(80.0, student.getExamScore(1), 0.0001);
     }
+
     @Test
-    public void getAverageTest(){
-
-        String firstName = "Leon";
-        String lastName = "Hunter";
-        Double[] examScores = { 100.0, 95.0, 123.0, 96.0 };
-        Student student = new Student(firstName, lastName, examScores);
-        Integer expected = 104;
-
-        Integer actual = student.getAverageExamScore();
-
-        Assert.assertEquals(expected, actual);
+    public void setExamScoresTest() {
+        Student student = new Student("B", "Chames", new Double[] {80.0, 90.0});
+        student.setExamScores(1, 66.0);
+        System.out.println(student.toString());
+        Assert.assertEquals(66.0, student.getExamScore(1), 0.0001);
     }
+
     @Test
-    public void toStringOverrideTest(){
-        String firstName = "Leon";
-        String lastName = "Hunter";
-        Double[] examScores = { 100.0, 95.0, 123.0, 96.0 };
-        Student student = new Student(firstName, lastName, examScores);
-        String actual = student.toString();
-
-        System.out.println(actual);
+    public void getAverageExamScoreTest(){
+        Student student = new Student("B", "Chames", new Double [] {25.0,35.0,45.0});
+        System.out.println(student.toString());
+        Assert.assertEquals(35.0, student.getAverageExamScore(), 0.0001);
     }
-
-
-
 }

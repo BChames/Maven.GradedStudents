@@ -1,95 +1,68 @@
 package io.zipcoder;
 
-import org.omg.PortableInterceptor.INACTIVE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Student {
-
-
-    private String firstName;
-    private String lastName;
+    String firstName;
+    String lastName;
     ArrayList<Double> examScores;
 
-    public Student(String firstName, String lastName,  Double[] examScores) {
+    public Student(String firstName, String lastName, Double[] testScores){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.examScores = new ArrayList<>(Arrays.asList(examScores));
-
+        if (testScores != null)
+            examScores = new ArrayList(Arrays.asList(testScores));
     }
-
-    public String getFirstName() {
+    public String getFirstName(){
         return firstName;
     }
-
-    public String getLastName() {
+    public void setFirstName(String newName){
+        firstName = newName;
+    }
+    public String getLastName(){
         return lastName;
     }
-
-    public Integer getNumberOfExamsTaken() {
-        return examScores.size();
-
+    public void setLastName(String newLastName){
+        lastName = newLastName;
     }
-    public void setExamScore(int examNumber, double newScore){
-       examScores.add(examNumber+1, newScore);
+    public Integer getNumberOfExamsTaken(){
+        return examScores == null ? 0 : examScores.size();
     }
+    public String getExamScores(){
+        String output = "";
+        Integer examNum = 1;
+        for(Double i : examScores)
+            output += "Exam " + examNum++ + " -> " + i + "\n";
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        return output;
     }
+    public void addExamScore(Double examScore) {
+        if (examScore == null)
+            examScores = new ArrayList<>(0);
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+        else
+            examScores.add(examScore);
     }
+    public void setExamScores(Integer nthExam, Double examScore){
+        examScores.set(nthExam - 1, examScore);
+    }
+    public Double getExamScore(Integer nthExam){
+        return examScores.get(nthExam - 1);
+    }
+    public Double getAverageExamScore(){
+        Double sum = 0.0;
+        if (examScores == null)
+            return 0.0;
 
-    public String getExamScores() {
-        String examStr = "Exam Scores:\n";
-        int count = 1;
-        for(int i = 0; i < examScores.size(); i++){
-            examStr+= "Exam " + count++ + " -> "+ examScores.get(i) +"\n";
-        }
-
-        return examStr;
+        for (Double score : examScores)
+            sum += score;
+        return sum / (double) getNumberOfExamsTaken();
     }
-    public ArrayList<Double> getExamScores1(){
-      return  this.examScores;
-    }
-    public void addExamScore(Double input){
-         examScores.add(input);
-    }
-
     @Override
-    public String toString() {
-        String examStr = "";
-        int count = 1;
-
-          for (int i = 0; i < examScores.size(); i++) {
-              Integer value = examScores.get(i).intValue();
-              examStr += "Exam " + count++ + " -> " + value + "\n";
-        }
-
-
-
-        return "Student Name: " + firstName + ' ' + lastName + "\n" +
-                "> Average Score: " + getAverageExamScore() + "\n" +
-                "> Exam Scores: " + "\n" + examStr;
-    }
-
-
-
-    public Integer getAverageExamScore(){
-
-        Double result = 0.0;
-        Double count = 0.0;//Get length of arraylist
-        for(int i = 1; i < examScores.size(); i++){
-            result+= examScores.get(i);
-           // result / examScores.size() - 1;
-            count++;
-        }
-        Double result2 = result / count;
-        Integer value = result2.intValue();
-        return value;
+    public String toString(){
+        return String.format("Student Name: %s %s\n"+
+                "> Average Score: %f\n"+
+                "%s", firstName, lastName, getAverageExamScore(), getExamScores());
     }
 }
-

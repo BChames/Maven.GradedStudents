@@ -1,84 +1,116 @@
 package io.zipcoder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+
+import static java.util.Arrays.sort;
 
 public class Classroom {
+    private Integer currentAmountOfStudents;
+    private Integer maxNumberOfStudents;
+    private Student[] students;
 
-  private Student[] students;
-  ArrayList<Student> studentList;
-
-    public Classroom(int maxNumberOfStudents){
-      Student[] maxClassroom = new Student[30];
-
-  }
-  public Classroom(Student[] students){
-         this.students = students;
-  }
-  public Classroom(){
-      Student[] students = new Student[30];
-  }
-
- public String getStudents(){
-      return students.toString();
- }
-
- public Integer getAllAverageExamScore(){
-     //Define a getter which returns the sum of all exams divded by the number of exams.
-     //sum of all exams first
-    //double loop
-     Double numberOfExams = 0.0;
-     Double examScoresTotal = 0.0;
-     Double result = 0.0;
-     for(int i = 0; i < students.length; i++) {
-         for (int j = 0; j < students.length; j++) {
-             examScoresTotal += students[i].getExamScores1().get(j);
-             numberOfExams++;
-         }
-     }
-
-     result = examScoresTotal / numberOfExams;
-     Integer value = result.intValue();
-     return value;
- }
-
-
- public void addStudent(Student student){
-    studentList.add(student);
-  }
- public void removeStudent(String firstName, String lastName) {
-     String result = "";
-     boolean removed = false;
-
-     for (int i = 0; i < students.length; i++) {
-         if(students[i].getFirstName().equals(firstName) && students[i].getLastName().equals(lastName) ) {
-             students[i] = null;
-             removed = true;
-;         }
-         else if (removed == true){
-             students[i -1] = students[i];
-         }
-     }
- }
-
- public void getStudentsByScore(){
-
-
- }
-    /*
-    public Integer getAllAverageExamScore(){
-
-        Double result = 0.0;
-        Double count = 0.0;//Get length of arraylist
-        for(int i = 1; i < examScores.size() +1 - 1; i++){
-            result+= examScores.get(i);
-            // result / examScores.size() - 1;
-            count++;
-        }
-        Double result2 = result / count;
-        Integer value = result2.intValue();
-        return value;
+    public Classroom(Integer maxNumberOfStudents){
+        students = new Student[maxNumberOfStudents];
+        this.maxNumberOfStudents = maxNumberOfStudents;
+        currentAmountOfStudents = 0;
     }
+    public Classroom(Student[] students) {
+        this.students = students;
+        currentAmountOfStudents = students.length;
+        maxNumberOfStudents = students.length;
+    }
+    public Classroom(){
+        this(30);
+    }
+    public Student[] getStudents(){
+        List<Student> studentList = new ArrayList<>();
+        for (Student student: students)
+            if (student != null)
+                studentList.add(student);
+        return studentList.toArray(new Student[studentList.size()]);
+    }
+    private Integer studentNoScores(){
+        Integer count = 0;
+        for(Student student : getStudents())
+            if (student.getNumberOfExamsTaken() == 0)
+                count ++;
 
- */
+        return count;
+    }
+    public Double getAverageExamScore(){
+        Double sumOfAverageScore = 0.0;
+        Student[] allStudents = getStudents();
+        for(Student student : allStudents)
+            sumOfAverageScore += student.getAverageExamScore();
+
+        return sumOfAverageScore / (double) (allStudents.length - studentNoScores());
+    }
+    public Boolean addStudent(Student student) {
+        for (Integer index = 0; index < students.length; index++)
+            if (students[index] == null) {
+                students[index] = student;
+                currentAmountOfStudents++;
+                return true;
+            }
+        return false;
+    }
+    public Student[] getStudentUseScore(){
+        Comparator<Student> nameComparator = Comparator.comparing(Student::getAverageExamScore).reversed().thenComparing(Student::getLastName);
+        Student[] sortedStudents = getStudents();
+        Arrays.sort(sortedStudents, nameComparator);
+
+        return sortedStudents;
+    }
+    public void removeStudent(String firstName, String lastName){
+        List<Student> studentList = new ArrayList<>(Arrays.asList(students));
+        for (Student student : getStudents()){
+            if (student.getFirstName().equals(firstName) && student.getLastName().equals(lastName)){
+                studentList.remove(student);
+                currentAmountOfStudents--;
+                break;
+            }
+        }
+        students = studentList.toArray(new Student[maxNumberOfStudents]);
+    }
+    public HashMap getGradeBook(){
+        HashMap<Student, Character> grades = new HashMap<>();
+        Student[] sortedStudents = getStudentUseScore();
+        Integer rankings = 1;
+
+        for(Student student : sortedStudents){
+            double percentGrades = ((double)(rankings) / (double)currentAmountOfStudents) * (double)100;
+
+            if(student.getNumberOfExamsTaken() == 0)
+                grades.put(student, ' ');
+            else if (percentGrades <= 10)
+                grades.put(student, 'A');
+            else if (percentGrades <= 29)
+                grades.put(student, 'B');
+            else if (percentGrades <= 50)
+                grades.put(student, 'C');
+            else if (percentGrades <= 89)
+                grades.put(student, 'D');
+            else
+                grades.put(student, 'F');
+            rankings++;
+        }
+        return grades;
+    }
+    public void printGrades(){
+        HashMap grades = getGradeBook();
+        for(Student student : getStudentUseScore())
+            System.out.print(student.getFirstName() + " " + student.getLastName() + ", " + grades.get(student));
+    }
+    @Override
+    public String toString(){
+        String names = "";
+        Student[] allStudents = getStudents();
+        for(Student student : allStudents)
+            names += (student.getFirstName() + " " + student.getLastName() + "\n");
+
+        return "Class room: \n"
+                + "Capacity of classroom: " + maxNumberOfStudents + "\n"
+                + "Current amount of students: " + currentAmountOfStudents + "\n"
+                + names;
+    }
 }
